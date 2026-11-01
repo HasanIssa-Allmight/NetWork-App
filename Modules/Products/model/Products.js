@@ -7,7 +7,7 @@ const productschema = new mongoose.Schema({
     },
     products_v:{
         price:{
-            type:Number , require:true
+            type:Number , required:true
         },
         discreption:{
             type:String,
