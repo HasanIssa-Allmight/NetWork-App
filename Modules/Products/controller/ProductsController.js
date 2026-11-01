@@ -1,26 +1,42 @@
 const ProductServ = require('../services/ProductServices')
 const photoschema = require('../SchemaValidator/PhotoSchema')
+const Addproductvalid = require('../SchemaValidator/AddProductValid')
 
 class ProductsController {
 
     async AddProduct(req , res){
         try{
-            const {name , products_v} = req.body
-            let photo_path = null
-                if(req.file){
-                    const validate_photo = {
-                        photo : req.file
-                    }
-                    const {err} = photoschema.validate(validate_photo , {abortEarly: false })
-                    if(err){
-                        return res.status(400).json({
-                            message : "photo error"
-                        })
-                    }
-                    photo_path = validate_photo.photo.filename
-                }
-            const data = await ProductServ.Add_Product(name , products_v , photo_path)
-            
+            if(req.roleId != 'admin'){
+                return res.status(401).json({
+                    message:'unAuthanticated'
+                })
+            }
+            const valid_obj = {
+                name: req.body.name,
+                products_v: {
+                    price: req.body.products_v.price, 
+                    discreption: req.body.products_v.discreption,
+                    type: req.body.products_v.type ,
+                    colore: req.body.products_v.colore ,
+                    image: req.file
+                },
+                catigores: req.body.catigores
+            }
+            const {error} = Addproductvalid.validate(valid_obj)
+            if (error) {
+                const formattedErrors = error.details.map(err => ({
+                    field: err.context.key, 
+                    message: err.message.replace(/"/g, '')
+                }));
+
+                return res.status(400).json({
+                    success: false,
+                    errors: formattedErrors
+                });
+            }
+            const {name , products_v , catigores} = valid_obj
+            products_v.image = valid_obj.products_v.image.filename
+            const data = await ProductServ.Add_Product(name , products_v , catigores)
             if(data){
                 return res.status(data.satus).json({
                     message: data.message,
@@ -82,6 +98,11 @@ class ProductsController {
 
     async DeleteProduct(req , res){
         try{
+            if(req.roleId != 'admin'){
+                return res.status(401).json({
+                    message:'unAuthanticated'
+                })
+            }
             const data = await ProductServ.Delete_Product(req.params.id)
         
             if(data){

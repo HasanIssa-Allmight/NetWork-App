@@ -18,8 +18,11 @@ const userschema = new mongoose.Schema({
     role:{
         type:String,
         enum:["admin","customer"]
+    },
+    created_at:{
+        type:Date,
+        default: Date.now
     }
-    
 })
 const User = mongoose.model('User',userschema)
 

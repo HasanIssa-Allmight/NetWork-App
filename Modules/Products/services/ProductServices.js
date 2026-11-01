@@ -3,12 +3,12 @@ const Products = require('../model/Products')
 
 class ProductServices {
 
-    async Add_Product (name , products_v , photo){
+    async Add_Product (name , products_v , catigores){
         const info = {}
         const product = await Products.create({
             name: name,
             products_v: products_v,
-            image:photo
+            catigores: catigores
         })
         if(product){
             info.message = "product added successfull"

@@ -19,7 +19,7 @@ class UserServices{
         if(user){
           token= jwt.sign({
                 id:user._id,
-                rolId:user.role
+                role:user.role
           },process.env.JWT_SECRET)
 
           info.token= token
@@ -33,7 +33,7 @@ class UserServices{
           return info
         }
     }
-     async AdminRegister(user_name,email,password){
+     async Admin_Register(user_name,email,password){
         const info={}
         const salt = await bcrypt.genSalt(10)
         const hashpassword = await bcrypt.hash(password,salt)
@@ -47,12 +47,19 @@ class UserServices{
             }
         ) 
         if(user){
-          token= jwt.sign(
-            process.env.JWT_SECRET
-          )
+          token= jwt.sign({
+            id:user._id,
+            role:user.role
+          },process.env.JWT_SECRET)
+
           info.token= token
           info.message="User created Successfully"
-          info.satus=201
+          info.status=201
+          return info
+        }
+        else{
+          info.message="faild to create user"
+          info.status=200
           return info
         }
     }
@@ -60,14 +67,14 @@ class UserServices{
         const info={}
 
         const user = await User.findOne({
-            email:{email}
+            email: email
         })
         if(user){
             const isMatch = await bcrypt.compare(password , user.password)
             if(isMatch){
                 const token= jwt.sign({
                     id:user._id,
-                    rolId:user.role
+                    role:user.role
                 },process.env.JWT_SECRET)
                 const role = user.role
                 if(role == "customer"){
