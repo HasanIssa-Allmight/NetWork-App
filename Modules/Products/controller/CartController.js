@@ -3,8 +3,8 @@ const CartServ = require('../services/CartServices')
 class CartController{
     async AddToCart(req,res){
         try{
-        const [user_id,product_id] = req.body
-        const data = await CartServ.Add_To_Cart(user_id,product_id)
+       
+        const data = await CartServ.Add_To_Cart(req.params.id)
             if (data) {
                 return res.status(data,status).json({
                      message: data.message,

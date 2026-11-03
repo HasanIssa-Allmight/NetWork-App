@@ -6,7 +6,7 @@ const cartschema = new mongoose.Schema({
     required:true,
     unique:true
   },
-  prodect_id :{
+  product_id :{
     type:mongoose.Schema.Types.ObjectId,
     required:true,
     unique:true
