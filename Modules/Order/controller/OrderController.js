@@ -4,9 +4,8 @@ class OrderController {
 
     async CreateOrder (req , res){
         try{
-            const user_id = req.user_id
-            const cart_id = req.params.cart_id
-            const data = await OrderServ.Create_Order(cart_id , user_id)
+            const user_id = req.userId
+            const data = await OrderServ.Create_Order(user_id)
             if(data){
                 return res.status(data.status).json({
                     message: data.message

@@ -2,28 +2,40 @@ const Order = require('../model/Order')
 const OrderItem = require('../model/OrderItems')
 const UserServ = require('../../User/services/UserServices')
 const ProductServ = require('../../Products/services/ProductServices')
+const Response = require('../../../Response/response')
 
 class  OrderServices{
 
-    async Create_Order(cart_id , user_id){
-        const info = {}
-        // const cart_item = await Get_CartItem(cart_id)
+    async Create_Order(user_id){
+        const cart_item = await Get_CartItem(user_id)
         const user = await UserServ.Get_User_ById(user_id)
+
         if(user && cart_item.length > 0){
             const UserOrder = await Order.create({
                 user_id: user_id,
-                name: `${user.user_name} order`
+                name: `${user.user_name} order`,
+                status: 'draft'
             })
             if(UserOrder){
+                let price = 0
                 for(let i=0 ; i<cart_item.length ; i++){
                     const product = await ProductServ.Get_Product_ById(cart_item[i].product_id)
-                    const Orderitem = await OrderItem.create({
-                        order_id: UserOrder.id,
-                        // product_id: cart_item[i].product_id
-                        price: cart_item[i].amount*product.price,
-                        amount: cart_item[i].amount
-                    })
+                    if(product){
+                        const Orderitem = await OrderItem.create({
+                            order_id: UserOrder.id,
+                            product_id: cart_item[i].product_id,
+                            price: cart_item[i].amount*product.price,
+                            amount: cart_item[i].amount
+                        })
+                        price = price + OrderItem.price
+                    }
                 }
+                UserOrder.price = price
+                await UserOrder.save()
+                return Response.createdSuccess(null)
+            }
+            else{
+                return Response.serverErorr()
             }
         }
     }

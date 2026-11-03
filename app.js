@@ -31,8 +31,11 @@ require('./Modules/Products/model/Cart')
 //routes
 const ProductRoutes =require('./Modules/Products/routes/routes')
 const UserRoutes = require('./Modules/User/routes/routes')
+const OrderRoutes = require('./Modules/Order/routes/routes')
+
 server.use('/' , ProductRoutes)
 server.use('/' , UserRoutes)
+server.use('/' , OrderRoutes)
 
 server.listen('4000' , (err)=>{
     if(err){

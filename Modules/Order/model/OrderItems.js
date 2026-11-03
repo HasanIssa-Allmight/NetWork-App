@@ -2,16 +2,16 @@ const mongoos = require('mongoose')
 
 const OrderItemSchema = new  mongoos.Schema({
     order_id :{
-        type:Number,
+        type:mongoos.Schema.Types.ObjectId,
         required:true
     },
     product_id:{
-        type:Number,
-        required: true
+        type:mongoos.Schema.Types.ObjectId,
+        required: true,
     },
     amount:{
         type:Number,
-        required: true
+        required: true,
     },
     price:{
         type:Number,

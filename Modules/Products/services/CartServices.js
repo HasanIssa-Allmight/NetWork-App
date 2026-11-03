@@ -1,59 +1,91 @@
 const Cart = require('../model/Cart')
+const Response = require('../../../Response/response')
 
 class CartServices{
 
-  async Add_To_Cart(user_id,product_id){
-    const info={}
-  const cart = await Cart.findOne({user_id:user_id})
-  if(!cart){
-    cart =await Cart.create({user_id:cart.user_id,
-        product_id:cart.product_id,
-        quantity:cart.quantity})
-  }else
-    {
-    const product = cart.findOne({
-     product_id: product_id
-  })
-  if(product){
-    cart.quantity +=1
-   await cart.save()
-    info.message="product added to cart"
-    info.status=200
-    return info
-  }else{
-    const new_product = cart.create({user_id:cart.user_id,product_id:cart.product_id,quantity:cart.quantity})
-    info.message="product added to cart"
-    info.status=200
-    return info
-  }}
+  async Add_To_Cart(user_id , product_id , amount){
+      const cart = await Cart.findOne({
+          user_id: user_id
+      })
+      if(cart){
+          const product = await Cart.findOne({
+              user_id: user_id,
+              product_id: product_id
+          })
+          if(product){
+              product.quantity = product.quantity + amount
+              await product.save()
+              const res = Response.success(null)
+              return res
+          }
+          else{
+              await Cart.create({
+                  user_id: user_id,
+                  product_id: product_id,
+                  quantity: amount
+              })
+              const res = Response.createdSuccess()
+              return res
+          }
+      }
+      else{
+        await Cart.create({
+                  user_id: user_id,
+                  product_id: product_id,
+                  quantity: amount
+              })
+              const res = Response.createdSuccess()
+              return res
+      }
   }
- async Get_ProductCart(cart_id){
-    const info={}
-    const cart = await Cart.find({cart_id:{cart_id}})
-    if (cart){
-      info.message="successfull"
-      info.cart= cart
-      info.status=200
-      return info
-    }else{
-       info.message="Product Not Found "
-      info.status=404
-      return info
-    }
- }
- async Delete_Productcart(product_id){
-    const info ={}
-    const deleted = await Cart.findByIdAndDelete({product_id:{product_id}})
-    if(deleted){
-            info.message = "product deleted successfully"
-            info.stauts = 200
-            return info
+  async Get_ProductCart(user_id){
+      const cart = await Cart.find({
+          user_id: user_id
+      })
+      if (cart){
+          const res = Response.success(cart)
+          return res
+      }
+      else{
+          const res = Response.notFound()
+          return res
+      }
+  }
+  async Delete_Productcart(user_id , product_id){
+        const cartItem = await Cart.findOne({
+            user_id:user_id,
+            product_id:product_id
+          })
+        if (cartItem.length < 0) {
+            const res = Response.notFound()
+            return res
+        }
+        if(cartItem.quantity > 1){
+            cartItem.quantity -= 1
+            await cartItem.save();
+            const res = Response.success(null)
+            return res
         }
         else{
-            info.message = "faild to delete product"
-            info.stauts = 400
-            return info
+            await Cart.findOneAndDelete({
+                user_id, 
+                product_id 
+              });
+            const res = Response.success(null)
+            return res
         }
- }
-}
+      }
+    async Get_CartItem(user_id){
+        const cart = await Cart.find({
+            user_id: user_id
+        })
+        if(cart){
+            return cart
+        }
+        else{
+            return null
+        }
+    }
+  }
+
 module.exports= new CartServices()

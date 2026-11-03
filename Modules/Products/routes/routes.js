@@ -23,8 +23,8 @@ routes.get('/GetProducts' , ProductsController.GetProducts)
 routes.get('/GetProductById/:id' , ProductsController.GetProductById)
 routes.delete('/DeleteProduct/:id' ,requireAuth, ProductsController.DeleteProduct)
 
-routes.post('/AddToCart',CartController.AddToCart)
-routes.get('/GetProductCart/:id',CartController.GetProductCart)
-routes.delete('/DeleteProductCart/:id' ,CartController.DeleteProductcart)
+routes.post('/AddToCart/:product_id',requireAuth , CartController.AddToCart)
+routes.get('/GetProductCart',requireAuth,CartController.GetProductCart)
+routes.delete('/DeleteProductCart/:product_id' ,requireAuth, CartController.DeleteProductcart)
 
 module.exports = routes
