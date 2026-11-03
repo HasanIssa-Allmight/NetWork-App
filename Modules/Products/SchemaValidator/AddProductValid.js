@@ -17,7 +17,8 @@ const Addproductvalid = Joi.object({
                 buffer: Joi.binary()
         }).unknown(true).required(),
     }),
-    catigores:Joi.string().required()
+    catigores:Joi.string().required(),
+    quantity: Joi.number().required().min(0)
 })
 
 module.exports = Addproductvalid

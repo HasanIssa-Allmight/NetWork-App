@@ -21,16 +21,11 @@ class OrderController {
 
     async GetOrderes(req , res){
         try{
-            const user_id = req.user_id
+            const user_id = req.userId
             const data = await OrderServ.Get_Orderes(user_id)
-            if(data.orderes){
+            if(data){
                 return res.status(data.status).json({
-                    orderes: data.orderes,
-                    message: data.message
-                })
-            }
-            else{
-                return res.status(data.status).json({
+                    orderes: data.data,
                     message: data.message
                 })
             }
@@ -46,14 +41,9 @@ class OrderController {
     try{
             const order_id = req.params.order_id
             const data = await OrderServ.Get_Order_ById(order_id)
-            if(data.order){
+            if(data){
                 return res.status(data.status).json({
-                    order: data.order,
-                    message: data.message
-                })
-            }
-            else{
-                return res.status(data.status).json({
+                    order: data.data,
                     message: data.message
                 })
             }

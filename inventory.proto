@@ -4,12 +4,22 @@ package inventory;
 
 service InventoryService {
   rpc GetAmount (GetAmountRequest) returns (GetAmountResponse);
+  rpc AddQuantity (AddQuantityRequest) returns (GetQuantityResponse);
 }
 
 message GetAmountRequest {
-  int32 product_id = 1;
+  string product_id = 1;
 }
 
 message GetAmountResponse {
   int32 quantity = 1;
+}
+
+message AddQuantityRequest{
+  int32 quantity = 1 ;
+  string product_id = 2;
+}
+
+message GetQuantityResponse {
+  string message = 1;
 }

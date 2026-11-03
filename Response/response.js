@@ -42,7 +42,7 @@ class Response {
     
     validate(message){
         return {
-            message: "message",
+            message: message,
             status : 400
         }
     }

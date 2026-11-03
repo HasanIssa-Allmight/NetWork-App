@@ -20,7 +20,8 @@ class ProductsController {
                     colore: req.body.products_v.colore ,
                     image: req.file
                 },
-                catigores: req.body.catigores
+                catigores: req.body.catigores,
+                quantity : req.body.quantity
             }
             const {error} = Addproductvalid.validate(valid_obj)
             if (error) {
@@ -34,11 +35,11 @@ class ProductsController {
                     errors: formattedErrors
                 });
             }
-            const {name , products_v , catigores} = valid_obj
+            const {name , products_v , catigores , quantity} = valid_obj
             products_v.image = valid_obj.products_v.image.filename
-            const data = await ProductServ.Add_Product(name , products_v , catigores)
+            const data = await ProductServ.Add_Product(name , products_v , catigores , quantity)
             if(data){
-                return res.status(data.stauts).json({
+                return res.status(data.satuts).json({
                     message: data.message,
                 })
             }
@@ -80,7 +81,8 @@ class ProductsController {
             if(data.product){
                 return res.status(data.stauts).json({
                     message: data.message,
-                    product: data.product
+                    product: data.product,
+                    quantity :data.quantity
                 })
             }
             else{

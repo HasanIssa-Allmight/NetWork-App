@@ -3,21 +3,24 @@ const Inventory = require('../../../src/grpc/inventoryClient')
 
 class ProductServices {
 
-    async Add_Product (name , products_v , catigores){
+    async Add_Product (name , products_v , catigores , quantity){
         const info = {}
         const product = await Products.create({
             name: name,
             products_v: products_v,
             catigores: catigores
         })
+        const pro = await Products.findById(product._id)
+        const idToString = pro._id.toString()
+        const quant = await Inventory.addQuantity(quantity , idToString)
         if(product){
-            info.message = "product added successfull"
-            info.satus = 201
+            info.message = quant.message
+            info.satuts = 201
             return info
         }
         else{
             info.message = "faild to add product"
-            info.satus = 201
+            info.satuts = 400
             return info
         }
     }
@@ -43,7 +46,8 @@ class ProductServices {
 
         const product = await Products.findById(id)
         if(product){
-            const quantity = await Inventory.getAmount(product.id)
+            const idToString = product._id.toString()
+            const quantity = await Inventory.getAmount(idToString)
             if(quantity.stauts != 404)  {
                 info.quantity = quantity.quantity
                 info.message = "successfull"
