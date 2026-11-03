@@ -1,5 +1,5 @@
 const Products = require('../model/Products')
-
+const Inventory = require('../../../src/grpc/inventoryClient')
 
 class ProductServices {
 
@@ -43,10 +43,20 @@ class ProductServices {
 
         const product = await Products.findById(id)
         if(product){
-            info.message = "successfull"
-            info.product = product
-            info.stauts = 200
-            return info
+            const quantity = await Inventory.getAmount(product.id)
+            if(quantity.stauts != 404)  {
+                info.quantity = quantity.quantity
+                info.message = "successfull"
+                info.product = product
+                info.stauts = 200
+                return info
+            }
+            else{
+                info.message = "product not found in inventory"
+                info.stauts = 404
+                return info
+            }
+
         }
         else{
             info.message = "Products not found"

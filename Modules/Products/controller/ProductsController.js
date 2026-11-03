@@ -38,7 +38,7 @@ class ProductsController {
             products_v.image = valid_obj.products_v.image.filename
             const data = await ProductServ.Add_Product(name , products_v , catigores)
             if(data){
-                return res.status(data.satus).json({
+                return res.status(data.stauts).json({
                     message: data.message,
                 })
             }
