@@ -23,8 +23,14 @@ const productschema = new mongoose.Schema({
             type:String,
             required:true
         },
+        image:{
+            type:String,
+            get: function(rawValue) {
+                return rawValue ? `http://localhost:4000/uploads/${rawValue}` : null;
+            }
+        }
     },
-    image:{
+    catigores:{
         type:String,
         required: true
     },
@@ -33,6 +39,11 @@ const productschema = new mongoose.Schema({
         default: Date.now
     }
 })
+
+
+
+productschema.set('toJSON', { getters: true });
+productschema.set('toObject', { getters: true });
 
 const Products =  mongoose.model('Products' , productschema)
 

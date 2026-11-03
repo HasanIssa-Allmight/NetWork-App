@@ -4,8 +4,7 @@ const routes = express.Router()
 const ProductsController = require('../controller/ProductsController')
 const CartController = require('../controller/CartController')
 const valid = require('../../../middleware/validerror')
-// const requireAuth = require('../../../middleware/AuthMiddelWare')
-const Addproductvalid = require('../SchemaValidator/AddProductValid')
+const requireAuth = require('../../../middleware/AuthMiddelWare')
 
 const multer = require('multer')
 const path = require('path')
@@ -19,10 +18,10 @@ const storage = multer.diskStorage({
                 })
 const upload = multer({storage : storage})
 
-routes.post('/AddProduct' , [upload.single('photo'),valid(Addproductvalid)] , ProductsController.AddProduct)
+routes.post('/AddProduct' , [requireAuth , upload.single('image')] , ProductsController.AddProduct)
 routes.get('/GetProducts' , ProductsController.GetProducts)
 routes.get('/GetProductById/:id' , ProductsController.GetProductById)
-routes.delete('/DeleteProduct/:id' , ProductsController.DeleteProduct)
+routes.delete('/DeleteProduct/:id' ,requireAuth, ProductsController.DeleteProduct)
 
 routes.post('/AddToCart',CartController.AddToCart)
 routes.get('/GetProductCart/:id',CartController.GetProductCart)
