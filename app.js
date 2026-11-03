@@ -23,10 +23,10 @@ server.use('/uploads', express.static('uploads'));
 //model
 require('./Modules/Products/model/Products')
 require('./Modules/User/model/User')
+require('./Modules/Products/model/Cart')
 //routes
 const ProductRoutes =require('./Modules/Products/routes/routes')
 const UserRoutes = require('./Modules/User/routes/routes')
-
 server.use('/' , ProductRoutes)
 server.use('/' , UserRoutes)
 

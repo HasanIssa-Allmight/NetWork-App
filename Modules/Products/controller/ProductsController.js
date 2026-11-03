@@ -22,7 +22,7 @@ class ProductsController {
             const data = await ProductServ.Add_Product(name , products_v , photo_path)
             
             if(data){
-                return res.status(data.satus).json({
+                return res.status(data.stauts).json({
                     message: data.message,
                 })
             }

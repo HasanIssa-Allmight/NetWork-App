@@ -2,6 +2,7 @@ const express = require('express')
 const routes = express.Router()
 
 const ProductsController = require('../controller/ProductsController')
+const CartController = require('../controller/CartController')
 const valid = require('../../../middleware/validerror')
 // const requireAuth = require('../../../middleware/AuthMiddelWare')
 const Addproductvalid = require('../SchemaValidator/AddProductValid')
@@ -23,5 +24,8 @@ routes.get('/GetProducts' , ProductsController.GetProducts)
 routes.get('/GetProductById/:id' , ProductsController.GetProductById)
 routes.delete('/DeleteProduct/:id' , ProductsController.DeleteProduct)
 
+routes.post('/AddToCart',CartController.AddToCart)
+routes.get('/GetProductCart/:id',CartController.GetProductCart)
+routes.delete('/DeleteProductCart/:id' ,CartController.DeleteProductcart)
 
 module.exports = routes
