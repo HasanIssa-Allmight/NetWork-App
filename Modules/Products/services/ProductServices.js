@@ -69,6 +69,14 @@ class ProductServices {
             return info
         }
     }
+
+    async Get_Product_For_Order (product_id){
+        const product = await Products.findById(product_id)
+        if(product){
+            return product
+        }
+        return null
+    }
 }
 
 module.exports = new ProductServices()

@@ -1,0 +1,70 @@
+const OrderServ = require('../services/OrderServices')
+
+class OrderController {
+
+    async CreateOrder (req , res){
+        try{
+            const user_id = req.user_id
+            const cart_id = req.params.cart_id
+            const data = await OrderServ.Create_Order(cart_id , user_id)
+            if(data){
+                return res.status(data.status).json({
+                    message: data.message
+                })
+            }
+        }
+        catch(error){
+            return res.status(500).json({
+                message: error.message
+            })
+        }
+    }
+
+    async GetOrderes(req , res){
+        try{
+            const user_id = req.user_id
+            const data = await OrderServ.Get_Orderes(user_id)
+            if(data.orderes){
+                return res.status(data.status).json({
+                    orderes: data.orderes,
+                    message: data.message
+                })
+            }
+            else{
+                return res.status(data.status).json({
+                    message: data.message
+                })
+            }
+        }
+        catch(error){
+            return res.status(500).json({
+                message: error.message
+            })
+        }
+    }
+
+    async GetOrderById (req , res){
+    try{
+            const order_id = req.params.order_id
+            const data = await OrderServ.Get_Order_ById(order_id)
+            if(data.order){
+                return res.status(data.status).json({
+                    order: data.order,
+                    message: data.message
+                })
+            }
+            else{
+                return res.status(data.status).json({
+                    message: data.message
+                })
+            }
+        }
+        catch(error){
+            return res.status(500).json({
+                message: error.message
+            })
+        }
+    }
+}
+
+module.exports = new OrderController()

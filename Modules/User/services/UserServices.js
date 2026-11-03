@@ -102,6 +102,13 @@ class UserServices{
             return info
         }
     }
+    async Get_User_ById(user_id){
+        const user = await User.findById(user_id)
+        if(user){
+            return user
+        }
+        return null
+    }
 }
 
 module.exports = new UserServices()
