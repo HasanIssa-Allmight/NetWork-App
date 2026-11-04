@@ -21,5 +21,6 @@ const call = (method, payload) =>
 
 module.exports = {
   getAmount: (productId) => call('GetAmount', { product_id: productId }),
-  addQuantity:(quantity , productId) => call('AddQuantity', {quantity :quantity , product_id: productId})
+  addQuantity:(quantity , productId) => call('AddQuantity', {quantity :quantity , product_id: productId}),
+  checkAmount: (productId , amount) => call('CheckAmount' , {product_id : productId , amount: amount})
 };

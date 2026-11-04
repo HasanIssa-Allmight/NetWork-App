@@ -4,6 +4,7 @@ const UserServ = require('../../User/services/UserServices')
 const ProductServ = require('../../Products/services/ProductServices')
 const Response = require('../../../Response/response')
 const CartServ = require('../../../Modules/Products/services/CartServices')
+const Inventory = require('../../../src/grpc/inventoryClient')
 
 class  OrderServices{
 
@@ -74,6 +75,36 @@ class  OrderServices{
         else{
             return Response.notFound()
         }
+    }
+
+    async Confirm_Order(order_id){
+        const order = await Order.findById(order_id)
+        if(order){
+            const orderItem = await OrderItem.find({
+                order_id: order._id
+            })
+            if(orderItem.length > 0){
+                const Arrayproduct = orderItem.map(item => String(item.product_id))
+                const Arrayamount = orderItem.map(item => Number(item.amount))
+
+                console.log(Arrayamount)
+                console.log(Arrayproduct)
+
+                const message = await Inventory.checkAmount(Arrayproduct , Arrayamount)
+                if(message.message == 'successfull'){
+                    order.status = 'confirmed'
+                    await order.save()
+                    return Response.success(null)
+                }
+                else{
+                    order.status = 'rejected'
+                    await order.save()
+                    return Response.serverErorr()
+                }
+            }
+            return Response.notFound()
+        }
+        return Response.notFound()
     }
 }
 
