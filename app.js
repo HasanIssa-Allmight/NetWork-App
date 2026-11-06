@@ -1,6 +1,7 @@
 const express = require('express')
 const ConnectDB = require('./database/connection')
 const cors = require('cors') 
+const redis = require('./infrastructure/redis/redis')
 const body_parser = require('body-parser')
 const server = express()
 
@@ -32,12 +33,32 @@ require('./Modules/Products/model/Cart')
 const routes = require('./v1/routes')
 
 server.use('/v1' , routes)
+    
+// server.listen('4000' , (err)=>{
+//      redis.connect()
+//     if(err){
+//         console.log('server not connect')
+//     }
+//     else{
+//         console.log('server is runinng on port 4000 ...')
+//     }
+// })
+async function startServer() {
+    try {
+        // Connect Redis first
+        await redis.connect();
 
-server.listen('4000' , (err)=>{
-    if(err){
-        console.log('server not connect')
+        console.log('Redis connected successfully!');
+
+        // Start Express after Redis connection
+        server.listen(4000, () => {
+            console.log('Server is running on port 4000 ...');
+        });
+
+    } catch (error) {
+        console.error('Failed to connect Redis:', error);
+        process.exit(1);
     }
-    else{
-        console.log('server is runinng on port 4000 ...')
-    }
-})
+}
+
+startServer();

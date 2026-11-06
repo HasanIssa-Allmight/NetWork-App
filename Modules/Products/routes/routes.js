@@ -26,5 +26,9 @@ routes.delete('/DeleteProduct/:id' ,requireAuth, ProductsController.DeleteProduc
 routes.post('/AddToCart/:product_id',requireAuth , CartController.AddToCart)
 routes.get('/GetProductCart',requireAuth,CartController.GetProductCart)
 routes.delete('/DeleteProductCart/:product_id' ,requireAuth, CartController.DeleteProductcart)
+//redis
+routes.post('/AddToCartRedis/:product_id',requireAuth , CartController.AddToCartRedis)
+routes.get('/GetProductCartRedis',requireAuth,CartController.GetProductCartRedis)
+routes.delete('/DeleteProductCartRedis/:product_id' ,requireAuth, CartController.DeleteProductcartRedis)
 
 module.exports = routes
