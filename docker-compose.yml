@@ -8,6 +8,7 @@ services:
     environment:
       - dburl=mongodb://mongo:27017/E_commerce
       - url=redis://redis:6379
+      - INVENTORY_GRPC_URL=inventory:50051
     volumes:
       - .:/app
       - /app/node_modules
@@ -16,7 +17,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-  
+    networks:
+      - default
+      - shared_network
   mongo:
     image: mongo:9
     restart: always
@@ -33,6 +36,8 @@ services:
     image: redis
     ports:
       - "127.0.0.1:6379:6379"
-
+networks:
+  shared_network:
+    external: true
 volumes:
   mongo-data:
