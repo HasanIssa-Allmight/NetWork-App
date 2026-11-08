@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@faker-js/faker": "^10.6.0",
     "@grpc/grpc-js": "^1.14.7",
     "@grpc/proto-loader": "^0.8.1",
     "bcryptjs": "^3.0.3",

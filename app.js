@@ -34,15 +34,10 @@ const routes = require('./v1/routes')
 
 server.use('/v1' , routes)
     
-// server.listen('4000' , (err)=>{
-//      redis.connect()
-//     if(err){
-//         console.log('server not connect')
-//     }
-//     else{
-//         console.log('server is runinng on port 4000 ...')
-//     }
-// })
+const Faker = require('./faker/faker')
+// Faker.UserFaker()
+// Faker.OrderFaker()
+
 async function startServer() {
     try {
         // Connect Redis first
@@ -56,7 +51,7 @@ async function startServer() {
         });
 
     } catch (error) {
-        console.error('Failed to connect Redis:', error);
+        console.log('Failed to connect Redis:');
         process.exit(1);
     }
 }

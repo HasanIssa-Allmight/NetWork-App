@@ -1,0 +1,38 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./.env
+    environment:
+      - dburl=mongodb://mongo:27017/E_commerce
+      - url=redis://redis:6379
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_started
+  
+  mongo:
+    image: mongo:9
+    restart: always
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  redis:
+    image: redis
+    ports:
+      - "127.0.0.1:6379:6379"
+
+volumes:
+  mongo-data:
