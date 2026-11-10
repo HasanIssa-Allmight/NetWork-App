@@ -5,6 +5,7 @@ const ProductServ = require('../../Products/services/ProductServices')
 const Response = require('../../../Response/response')
 const CartServ = require('../../../Modules/Products/services/CartServices')
 const Inventory = require('../../../src/grpc/inventoryClient')
+const redis = require('../../../infrastructure/redis/redis')
 
 class  OrderServices{
 
@@ -76,7 +77,29 @@ class  OrderServices{
             return Response.notFound()
         }
     }
+   
+    async Add_Sales(orderItem){
+        const multi = redis.multi()
+        orderItem.forEach(item => {
+            multi.zIncrBy('products:top_sellers',Number(item.amount),String(item.product_id))
 
+        });
+        await multi.exec()
+    }
+      async Get_Top(limit = 5) {
+    const top = await redis.zRangeWithScores('products:top_sellers', 0, limit - 1, { REV: true });
+    if (top.length === 0) return [];
+
+    const ids = top.map((t) => t.value);
+    const products = await ProductServ.Get_Products_By_Ids(ids)
+
+    return top
+      .map((t) => {
+        const p = products.find((x) => String(x._id) === t.value);
+        return p ? { ...p, sold: t.score } : null;
+      })
+      .filter(Boolean);
+  }
     async Confirm_Order(order_id){
         const order = await Order.findById(order_id)
         if(order){
@@ -94,6 +117,12 @@ class  OrderServices{
                 if(message.message == 'successfull'){
                     order.status = 'confirmed'
                     await order.save()
+                     try {
+                        await this.Add_Sales(orderItem)
+                         } catch (e) {
+                     console.error('Redis top sellers error:', e.message)
+                                }
+
                     return Response.success(null)
                 }
                 else{
