@@ -3,30 +3,54 @@ services:
     build: .
     ports:
       - "4000:4000"
+    command: npm run dev
     env_file:
       - ./.env
     environment:
-      - dburl=mongodb://mongo:27017/E_commerce
+      - dburl=mongodb://mongo1:27017,mongo2:27017/E_commerce?replicaSet=rs0
       - url=redis://redis:6379
       - INVENTORY_GRPC_URL=inventory:50051
     volumes:
       - .:/app
       - /app/node_modules
     depends_on:
-      mongo:
+      mongo1:
+        condition: service_healthy
+      mongo2:
         condition: service_healthy
       redis:
         condition: service_started
     networks:
       - default
       - shared_network
-  mongo:
+      - ecom-net
+  mongo1:
     image: mongo:9
+    container_name: mongo1
+    command: ["--replSet" , "rs0" , "--bind_ip_all" , "--port" , "27017"]
     restart: always
     ports:
       - "127.0.0.1:27017:27017"
     volumes:
-      - mongo-data:/data/db
+      - mongo1-data:/data/db
+    networks:
+      - ecom-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  mongo2:
+    image: mongo:9
+    container_name: mongo2
+    command: ["--replSet" , "rs0" , "--bind_ip_all" , "--port" , "27017"]
+    restart: always
+    ports:
+      - "127.0.0.1:27018:27017"
+    volumes:
+      - mongo2-data:/data/db
+    networks:
+      - ecom-net
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
       interval: 5s
@@ -37,7 +61,10 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
 networks:
+  ecom-net:
+    driver: bridge
   shared_network:
     external: true
 volumes:
-  mongo-data:
+  mongo1-data:
+  mongo2-data:

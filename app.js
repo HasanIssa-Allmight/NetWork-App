@@ -24,6 +24,7 @@ server.use(
 ConnectDB()
 
 
+require('./Modules/Products/services/CartServices')
 
 //model
 require('./Modules/Products/model/Products')

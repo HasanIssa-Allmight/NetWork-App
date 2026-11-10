@@ -1,3 +1,3 @@
 module.exports = {
-    //name of events
+    DELET_FROM_CART : "DELET_FROM_CART"
 }

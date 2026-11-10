@@ -2,10 +2,28 @@ const Cart = require('../model/Cart')
 const Response = require('../../../Response/response')
 const redis = require('../../../infrastructure/redis/redis')
 const {logResults} = require('../../../Logging/Logger')
+const event = require('../../../events/GlobalEvent')
+const eventType = require('../../../constant/eventsType')
 
 class CartServices{
 
-  async Add_To_Cart(user_id , product_id , amount){
+    constructor(){
+        this.initializeEventListeners()
+    }
+    initializeEventListeners(){
+        event.on(eventType.DELET_FROM_CART , async (data)=>{
+            await this.DELET_FROM_CART(data)
+        })
+    }
+
+    async DELET_FROM_CART(data){
+        const cart = await Cart.findById(data.cart_id)
+        if(cart){
+            await Cart.deleteOne(cart)
+        }
+    }
+
+    async Add_To_Cart(user_id , product_id , amount){
       const cart = await Cart.findOne({
           user_id: user_id
       })
@@ -47,12 +65,6 @@ class CartServices{
           user_id: user_id
       })
       if (cart){
-            logResults('cartlog' , 'Befor_Index' , {
-                stage: state.queryPlanner.winningPlan.stage,
-                docsExamined: state.executionStats.totalDocsExamined,
-                returned: state.executionStats.nReturned,
-                timeMs: state.executionStats.executionTimeMillis,
-            })
           const res = Response.success(cart)
           return res
       }
@@ -131,16 +143,18 @@ class CartServices{
               return res
       }
   }
+  async Get_ProductCart_Redis_ForOrder(user_id){
+    const cart_key = `cart:${user_id}`
+    const cart  = await redis.hGetAll(cart_key)
+    if(cart){
+        return cart
+    }
+    return null
+  }
   async Get_ProductCart_Redis(user_id){
       const cart_key =`cart:${user_id}`
       const cart=  await redis.hGetAll(cart_key)
       if (cart){  
-            logResults('cartlog' , 'Befor_Index' , {
-                stage: state.queryPlanner.winningPlan.stage,
-                docsExamined: state.executionStats.totalDocsExamined,
-                returned: state.executionStats.nReturned,
-                timeMs: state.executionStats.executionTimeMillis,
-            })
           const res = Response.success(cart)
           return res
       }
