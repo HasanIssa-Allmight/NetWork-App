@@ -118,6 +118,33 @@ class  OrderServices{
         }
     }
 
+    async Get_Order_ById_WithIndex(order_id){
+        await Index.Create_Index_In_OrderItem()
+        const order = await Order.findById(order_id)
+        if(order){
+            const orderItem = await OrderItem.find({
+                order_id: order._id
+            })
+            const state = await OrderItem.find({
+                order_id: order._id
+            }).explain('excutionStats')
+            if(orderItem){
+                logResults('orderlog' , 'After_Index' , {
+                    stage: state.queryPlanner.winningPlan.stage,
+                    docsExamined: state.executionStats.totalDocsExamined,
+                    returned: state.executionStats.nReturned,
+                    timeMs: state.executionStats.executionTimeMillis,
+                })
+                return Response.success(orderItem)
+            }
+            else{
+                return Response.notFound()
+            }
+        }
+        else{
+            return Response.notFound()
+        }
+    }
 
     async Confirm_Order(order_id){
         const order = await Order.findById(order_id)
