@@ -37,10 +37,46 @@ class OrderController {
         }
     }
 
+    async GetOrderesWithIndex(req , res){
+        try{
+            const user_id = req.userId
+            const data = await OrderServ.Get_Order_WithIndex(user_id)
+            if(data){
+                return res.status(data.status).json({
+                    orderes: data.data,
+                    message: data.message
+                })
+            }
+        }
+        catch(error){
+            return res.status(500).json({
+                message: error.message
+            })
+        }
+    }
+
     async GetOrderById (req , res){
     try{
             const order_id = req.params.order_id
             const data = await OrderServ.Get_Order_ById(order_id)
+            if(data){
+                return res.status(data.status).json({
+                    order: data.data,
+                    message: data.message
+                })
+            }
+        }
+        catch(error){
+            return res.status(500).json({
+                message: error.message
+            })
+        }
+    }
+
+    async GetOrderByIdWithIndex(req , res){
+        try{
+            const order_id = req.params.order_id
+            const data = await OrderServ.Get_Order_ById_WithIndex(order_id)
             if(data){
                 return res.status(data.status).json({
                     order: data.data,

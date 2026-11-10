@@ -1,6 +1,8 @@
 const Cart = require('../model/Cart')
 const Response = require('../../../Response/response')
 const redis = require('../../../infrastructure/redis/redis')
+const {logResults} = require('../../../Logging/Logger')
+
 class CartServices{
 
   async Add_To_Cart(user_id , product_id , amount){
@@ -45,6 +47,12 @@ class CartServices{
           user_id: user_id
       })
       if (cart){
+            logResults('cartlog' , 'Befor_Index' , {
+                stage: state.queryPlanner.winningPlan.stage,
+                docsExamined: state.executionStats.totalDocsExamined,
+                returned: state.executionStats.nReturned,
+                timeMs: state.executionStats.executionTimeMillis,
+            })
           const res = Response.success(cart)
           return res
       }
@@ -127,6 +135,12 @@ class CartServices{
       const cart_key =`cart:${user_id}`
       const cart=  await redis.hGetAll(cart_key)
       if (cart){  
+            logResults('cartlog' , 'Befor_Index' , {
+                stage: state.queryPlanner.winningPlan.stage,
+                docsExamined: state.executionStats.totalDocsExamined,
+                returned: state.executionStats.nReturned,
+                timeMs: state.executionStats.executionTimeMillis,
+            })
           const res = Response.success(cart)
           return res
       }

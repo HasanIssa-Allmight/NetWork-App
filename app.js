@@ -37,6 +37,8 @@ server.use('/v1' , routes)
 const Faker = require('./faker/faker')
 // Faker.UserFaker()
 // Faker.OrderFaker()
+// Faker.ProductsFaker()
+// Faker.OrderItemFaker()
 
 async function startServer() {
     try {

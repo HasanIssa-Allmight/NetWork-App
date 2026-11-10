@@ -9,5 +9,8 @@ routes.get('/GetOrderes' , requireAuth , OrderController.GetOrderes)
 routes.get('/GetOrderById/:order_id' , requireAuth , OrderController.GetOrderById)
 routes.post('/ConfirmOrder/:order_id' , requireAuth , OrderController.ConfirmOrder)
 
+routes.get('/GetOrderesWithIndex' , requireAuth , OrderController.GetOrderesWithIndex)
+routes.get('/GetOrderByIdWithIndex/:order_id' , requireAuth , OrderController.GetOrderByIdWithIndex)
+
 
 module.exports = routes

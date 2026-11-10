@@ -5,6 +5,8 @@ const ProductServ = require('../../Products/services/ProductServices')
 const Response = require('../../../Response/response')
 const CartServ = require('../../../Modules/Products/services/CartServices')
 const Inventory = require('../../../src/grpc/inventoryClient')
+const {logResults} = require('../../../Logging/Logger')
+const Index = require('../indeces/createIndex')
 
 class  OrderServices{
 
@@ -48,10 +50,20 @@ class  OrderServices{
         }
     }
     async Get_Orderes(user_id){
+        await Index.Drop_Index()
         const orderes = await Order.find({
             user_id: user_id
         })
+        const state = await Order.find({
+            user_id: user_id
+        }).limit(20).explain('excutionStats')
         if(orderes){
+            logResults('orderlog' , 'Befor_Index' , {
+                stage: state.queryPlanner.winningPlan.stage,
+                docsExamined: state.executionStats.totalDocsExamined,
+                returned: state.executionStats.nReturned,
+                timeMs: state.executionStats.executionTimeMillis,
+            })
             return Response.success(orderes)
         }
         else{
@@ -59,13 +71,44 @@ class  OrderServices{
         }
     }
 
+    async Get_Order_WithIndex (user_id){
+        await Index.Create_Index()
+        const orderes = await Order.find({
+            user_id: user_id
+        })
+        const state = await Order.find({
+            user_id: user_id
+        }).limit(20).explain('excutionStats')
+        if(orderes){
+            logResults('orderlog' , 'After_Index' , {
+                stage: state.queryPlanner.winningPlan.stage,
+                docsExamined: state.executionStats.totalDocsExamined,
+                returned: state.executionStats.nReturned,
+                timeMs: state.executionStats.executionTimeMillis,
+            })
+            return Response.success(orderes)
+        }
+        else{
+            return Response.notFound()
+        }
+    }
     async Get_Order_ById(order_id){
+        await Index.Drop_Index_In_OrderItem()
         const order = await Order.findById(order_id)
         if(order){
             const orderItem = await OrderItem.find({
                 order_id: order._id
             })
+            const state = await OrderItem.find({
+                order_id: order._id
+            }).explain('excutionStats')
             if(orderItem){
+                logResults('orderlog' , 'Befor_Index' , {
+                    stage: state.queryPlanner.winningPlan.stage,
+                    docsExamined: state.executionStats.totalDocsExamined,
+                    returned: state.executionStats.nReturned,
+                    timeMs: state.executionStats.executionTimeMillis,
+                })
                 return Response.success(orderItem)
             }
             else{
@@ -76,6 +119,35 @@ class  OrderServices{
             return Response.notFound()
         }
     }
+
+    async Get_Order_ById_WithIndex(order_id){
+        await Index.Create_Index_In_OrderItem()
+        const order = await Order.findById(order_id)
+        if(order){
+            const orderItem = await OrderItem.find({
+                order_id: order._id
+            })
+            const state = await OrderItem.find({
+                order_id: order._id
+            }).explain('excutionStats')
+            if(orderItem){
+                logResults('orderlog' , 'After_Index' , {
+                    stage: state.queryPlanner.winningPlan.stage,
+                    docsExamined: state.executionStats.totalDocsExamined,
+                    returned: state.executionStats.nReturned,
+                    timeMs: state.executionStats.executionTimeMillis,
+                })
+                return Response.success(orderItem)
+            }
+            else{
+                return Response.notFound()
+            }
+        }
+        else{
+            return Response.notFound()
+        }
+    }
+
 
     async Confirm_Order(order_id){
         const order = await Order.findById(order_id)
