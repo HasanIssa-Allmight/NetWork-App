@@ -5,8 +5,6 @@ const ProductServ = require('../../Products/services/ProductServices')
 const Response = require('../../../Response/response')
 const CartServ = require('../../../Modules/Products/services/CartServices')
 const Inventory = require('../../../src/grpc/inventoryClient')
-const {logResults} = require('../../../Logging/Logger')
-const Index = require('../indeces/createIndex')
 
 class  OrderServices{
 
@@ -120,34 +118,6 @@ class  OrderServices{
         }
     }
 
-    async Get_Order_ById_WithIndex(order_id){
-        await Index.Create_Index_In_OrderItem()
-        const order = await Order.findById(order_id)
-        if(order){
-            const orderItem = await OrderItem.find({
-                order_id: order._id
-            })
-            const state = await OrderItem.find({
-                order_id: order._id
-            }).explain('excutionStats')
-            if(orderItem){
-                logResults('orderlog' , 'After_Index' , {
-                    stage: state.queryPlanner.winningPlan.stage,
-                    docsExamined: state.executionStats.totalDocsExamined,
-                    returned: state.executionStats.nReturned,
-                    timeMs: state.executionStats.executionTimeMillis,
-                })
-                return Response.success(orderItem)
-            }
-            else{
-                return Response.notFound()
-            }
-        }
-        else{
-            return Response.notFound()
-        }
-    }
-
 
     async Confirm_Order(order_id){
         const order = await Order.findById(order_id)
@@ -166,6 +136,12 @@ class  OrderServices{
                 if(message.message == 'successfull'){
                     order.status = 'confirmed'
                     await order.save()
+                     try {
+                        await this.Add_Sales(orderItem)
+                         } catch (e) {
+                     console.error('Redis top sellers error:', e.message)
+                                }
+
                     return Response.success(null)
                 }
                 else{

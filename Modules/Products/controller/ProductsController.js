@@ -1,7 +1,7 @@
 const ProductServ = require('../services/ProductServices')
 const photoschema = require('../SchemaValidator/PhotoSchema')
 const Addproductvalid = require('../SchemaValidator/AddProductValid')
-
+const OrderServ = require('../../Order/services/OrderServices')
 class ProductsController {
 
     async AddProduct(req , res){
@@ -116,6 +116,20 @@ class ProductsController {
         catch(err){
             return res.status(500).json({
                 message:err.message
+            })
+        }
+    }
+     async GetTop(req,res){
+        try{
+        const data = await OrderServ.Get_Top(req = 5)
+            if (data) {
+                return res.status(data.status).json({
+                    message: data.message
+                })
+            
+        }}catch(error){
+            return res.status(500).json({
+                message : error.message
             })
         }
     }

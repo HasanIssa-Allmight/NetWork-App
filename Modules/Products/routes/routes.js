@@ -30,5 +30,6 @@ routes.delete('/DeleteProductCart/:product_id' ,requireAuth, CartController.Dele
 routes.post('/AddToCartRedis/:product_id',requireAuth , CartController.AddToCartRedis)
 routes.get('/GetProductCartRedis',requireAuth,CartController.GetProductCartRedis)
 routes.delete('/DeleteProductCartRedis/:product_id' ,requireAuth, CartController.DeleteProductcartRedis)
+routes.get('/GetTopProduct',ProductsController.GetTop)
 
 module.exports = routes

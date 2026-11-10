@@ -91,6 +91,10 @@ class ProductServices {
         }
         return null
     }
+
+    async Get_Products_By_Ids(ids) {
+    return await Products.find({ _id: { $in: ids } }).lean()
+}
 }
 
 module.exports = new ProductServices()
