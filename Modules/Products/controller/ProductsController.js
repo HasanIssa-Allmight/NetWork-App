@@ -54,8 +54,9 @@ class ProductsController {
     async GetProducts (req , res){
         try{
             const data = await ProductServ.Get_Products()
-        
+            
             if(data.products){
+                res.set('Cache-Control', 'private, no-cache') 
                 return res.status(data.stauts).json({
                     message: data.message,
                     products: data.products
@@ -124,7 +125,9 @@ class ProductsController {
         const data = await OrderServ.Get_Top(req = 5)
             if (data) {
                 return res.status(200).json({
-                    message: data.message
+
+                    message: "successfull",
+                    data: data
                 })
             
         }}catch(error){

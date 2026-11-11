@@ -14,7 +14,7 @@ class Faker {
 
     async UserFaker (){
 
-        const Total_User = 1000
+        const Total_User = 10
         let user = []
         const salt = await bcrypt.genSalt(10)
         const hashpassword = await bcrypt.hash("12345678",salt)
@@ -23,9 +23,9 @@ class Faker {
         for(let i=0; i<Total_User ; i++){
             user[i] = {
                 user_name : faker.person.fullName(),
-                email: `user${i}_${faker.internet.email().toLowerCase()}`,
+                email: `user${i}@test.com`,
                 password : hashpassword,
-                role: faker.helpers.arrayElement(roles)
+                role: "customer"
             } 
         }
         await User.insertMany(user , {ordered:false})
