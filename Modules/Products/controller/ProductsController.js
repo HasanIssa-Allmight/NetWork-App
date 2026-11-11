@@ -56,6 +56,7 @@ class ProductsController {
             const data = await ProductServ.Get_Products()
         
             if(data.products){
+                res.set('Cache-Control' , 'private, no-cache')
                 return res.status(data.stauts).json({
                     message: data.message,
                     products: data.products

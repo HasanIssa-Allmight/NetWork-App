@@ -14,7 +14,7 @@ class Faker {
 
     async UserFaker (){
 
-        const Total_User = 10
+        const Total_User = 2000
         let user = []
         const salt = await bcrypt.genSalt(10)
         const hashpassword = await bcrypt.hash("12345678",salt)

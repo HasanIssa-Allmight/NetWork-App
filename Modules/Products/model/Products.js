@@ -34,10 +34,8 @@ const productschema = new mongoose.Schema({
         type:String,
         required: true
     },
-    created_at:{
-        type:Date,
-        default: Date.now
-    }
+}, {
+    timestamps: {createdAt: 'created_at' , updatedAt: 'updated_at'}
 })
 
 

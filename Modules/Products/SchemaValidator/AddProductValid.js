@@ -15,7 +15,7 @@ const Addproductvalid = Joi.object({
                 mimetype : Joi.string().valid('image/jpeg', 'image/png', 'image/jpg').required()
                         .messages({'any.only' : "the image must be png , jpg or jpeg"}),
                 buffer: Joi.binary()
-        }).unknown(true).required(),
+        }).unknown(true),
     }),
     catigores:Joi.string().required(),
     quantity: Joi.number().required().min(0)
