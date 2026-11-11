@@ -8,6 +8,7 @@ const Inventory = require('../../../src/grpc/inventoryClient')
 const eventType = require('../../../constant/eventsType')
 const event = require('../../../events/GlobalEvent')
 const Index = require('../indeces/createIndex')
+const redis = require('../../../infrastructure/redis/redis')
 const {logResults} = require('../../../Logging/Logger')
 
 class  OrderServices{
