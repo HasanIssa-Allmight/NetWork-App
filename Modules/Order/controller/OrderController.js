@@ -107,6 +107,23 @@ class OrderController {
         }
 
     }
+
+    async CreateOrderAfter (req , res){
+        try{
+            const user_id = req.userId
+            const data = await OrderServ.Create_Order_After(user_id)
+            if(data){
+                return res.status(data.status).json({
+                    message: data.message
+                })
+            }
+        }
+        catch(error){
+            return res.status(500).json({
+                message: error.message
+            })
+        }
+    }
    
 }
 

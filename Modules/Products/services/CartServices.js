@@ -26,12 +26,12 @@ class CartServices{
     async Add_To_Cart(user_id , product_id , amount){
       const cart = await Cart.findOne({
           user_id: user_id
-      })
+      }).read('secondary')
       if(cart){
           const product = await Cart.findOne({
               user_id: user_id,
               product_id: product_id
-          })
+          }).read('secondary')
           if(product){
               product.quantity = product.quantity + amount
               await product.save()
@@ -63,8 +63,17 @@ class CartServices{
   async Get_ProductCart(user_id){
       const cart = await Cart.find({
           user_id: user_id
-      })
+      }).read('secondary')
+      const state = await Cart.find({
+        user_id: user_id
+      }).explain('executionStats').read('secondary')
       if (cart){
+        logResults('cartlog' , 'Befor' , {
+            stage: state.queryPlanner.winningPlan.stage,
+            docsExamined: state.executionStats.totalDocsExamined,
+            returned: state.executionStats.nReturned,
+            timeMs: state.executionStats.executionTimeMillis,
+        })
           const res = Response.success(cart)
           return res
       }
@@ -78,7 +87,7 @@ class CartServices{
         const cartItem = await Cart.findOne({
             user_id:user_id,
             product_id:product_id
-          })
+          }).read('secondary')
         if (cartItem.length < 0) {
             const res = Response.notFound()
             return res
@@ -101,7 +110,7 @@ class CartServices{
     async Get_CartItem(user_id){
         const cart = await Cart.find({
             user_id: user_id
-        })
+        }).read('secondary')
         if(cart){
             return cart
         }

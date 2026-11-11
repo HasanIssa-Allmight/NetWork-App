@@ -103,7 +103,7 @@ class UserServices{
         }
     }
     async Get_User_ById(user_id){
-        const user = await User.findById(user_id)
+        const user = await User.findById(user_id).read('secondary')
         if(user){
             return user
         }

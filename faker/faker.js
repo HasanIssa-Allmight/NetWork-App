@@ -4,6 +4,7 @@ const User = require('../Modules/User/model/User')
 const Order = require('../Modules/Order/model/Order')
 const Products = require('../Modules/Products/model/Products')
 const OrderItem = require('../Modules/Order/model/OrderItems')
+const Cart = require('../Modules/Products/model/Cart')
 
 const bcrypt = require('bcryptjs')
 
@@ -91,5 +92,19 @@ class Faker {
         process.exit()
     }
 
+    async CartFaker(){
+        const Total = 1000
+        let cart = []
+        const users = await User.find().select('_id').lean()
+        const product = await Products.find().select('_id').lean()
+        for(let i=0 ; i<Total ; i++){
+            cart[i] = {
+                user_id: users[i]._id,
+                product_id: product[Math.floor(Math.random()*product.length)]._id,
+                quantity : faker.number.int({min:1 , max:10}),
+            }
+        }
+        await Cart.insertMany(cart)
+    }
 }
 module.exports = new Faker()

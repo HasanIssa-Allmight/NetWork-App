@@ -11,6 +11,7 @@ routes.post('/ConfirmOrder/:order_id' , requireAuth , OrderController.ConfirmOrd
 
 routes.get('/GetOrderesWithIndex' , requireAuth , OrderController.GetOrderesWithIndex)
 routes.get('/GetOrderByIdWithIndex/:order_id' , requireAuth , OrderController.GetOrderByIdWithIndex)
+routes.post('/CreateOrderAfter' , requireAuth , OrderController.CreateOrderAfter)
 
 
 module.exports = routes

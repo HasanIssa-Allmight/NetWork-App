@@ -40,6 +40,7 @@ const Faker = require('./faker/faker')
 // Faker.OrderFaker()
 // Faker.ProductsFaker()
 // Faker.OrderItemFaker()
+// Faker.CartFaker()
 
 async function startServer() {
     try {

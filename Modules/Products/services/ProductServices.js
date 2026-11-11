@@ -1,5 +1,6 @@
 const Products = require('../model/Products')
 const Inventory = require('../../../src/grpc/inventoryClient')
+const mongoose = require('mongoose')
 
 class ProductServices {
 
@@ -10,7 +11,7 @@ class ProductServices {
             products_v: products_v,
             catigores: catigores
         })
-        const pro = await Products.findById(product._id)
+        const pro = await Products.findById(product._id).read('secondary')
         const idToString = pro._id.toString()
         const quant = await Inventory.addQuantity(quantity , idToString)
         if(product){
@@ -27,7 +28,7 @@ class ProductServices {
     async Get_Products(){
         const info = {}
 
-        const products = await Products.find()
+        const products = await Products.find().read('secondary')
         if(products){
             info.message = "successfull"
             info.products = products
@@ -44,7 +45,7 @@ class ProductServices {
     async Get_Product_ById(id){
         const info = {}
 
-        const product = await Products.findById(id)
+        const product = await Products.findById(id).read('secondary')
         if(product){
             const idToString = product._id.toString()
             const quantity = await Inventory.getAmount(idToString)
@@ -85,7 +86,7 @@ class ProductServices {
     }
 
     async Get_Product_For_Order (product_id){
-        const product = await Products.findById(product_id)
+        const product = await Products.findById(product_id).read('secondary')
         if(product){
             return product
         }
@@ -93,7 +94,8 @@ class ProductServices {
     }
 
     async Get_Products_By_Ids(ids) {
-        return await Products.find({ _id: { $in: ids } }).lean()
+        const objId = ids.map(id => new mongoose.Types.ObjectId(id))
+        return await Products.find({ _id: { $in: objId } }).lean()
     }
 }
 
