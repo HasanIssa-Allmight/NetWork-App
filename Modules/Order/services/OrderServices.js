@@ -70,6 +70,8 @@ class  OrderServices{
                         price = price + Orderitem.price
                     }
                 }
+                const cart_key =`cart:${user_id}`
+                await redis.del(cart_key)
                 UserOrder.price = price
                 await UserOrder.save()
                 return Response.createdSuccess(null)
