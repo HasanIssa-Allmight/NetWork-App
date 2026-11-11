@@ -123,8 +123,9 @@ class ProductsController {
         try{
         const data = await OrderServ.Get_Top(req = 5)
             if (data) {
-                return res.status(data.status).json({
-                    message: data.message
+                return res.status(200).json({
+                    message: "successfull",
+                    data: data
                 })
             
         }}catch(error){
