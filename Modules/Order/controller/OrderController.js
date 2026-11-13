@@ -114,7 +114,8 @@ class OrderController {
             const data = await OrderServ.Create_Order_After(user_id)
             if(data){
                 return res.status(data.status).json({
-                    message: data.message
+                    message: data.message,
+                    order_id:data.data.id
                 })
             }
         }

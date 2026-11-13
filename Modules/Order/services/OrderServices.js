@@ -39,48 +39,55 @@ class  OrderServices{
                 }
                 UserOrder.price = price
                 await UserOrder.save()
-                return Response.createdSuccess(null)
+                return Response.createdSuccess()
             }
             else{
                 return Response.serverErorr()
             }
         }
     }
-    async Create_Order_After(user_id){
-        const cart_item = await CartServ.Get_ProductCart_Redis_ForOrder(user_id)
-        const user = await UserServ.Get_User_ById(user_id)
-        if(user && Object.keys(cart_item).length > 0){
-            const UserOrder = await Order.create({
-                user_id: user_id,
-                name: `${user.user_name} order`,
-                status: 'draft'
+    async Create_Order_After(user_id) {
+        const [cart_item, user] = await Promise.all([
+            CartServ.Get_ProductCart_Redis_ForOrder(user_id),
+            UserServ.Get_User_ById(user_id)
+        ])
+
+        const entries = Object.entries(cart_item || {})
+        if (!user || entries.length === 0) return
+
+        const products = await Promise.all(
+            entries.map(([product_id]) => ProductServ.Get_Product_For_Order(product_id))
+        )
+        let price = 0
+        const itemsData = []
+        entries.forEach(([, amount], i) => {
+            const product = products[i]
+            if (!product) return
+            const item_price = amount * product.products_v.price
+            price += item_price
+            itemsData.push({
+                product_id: product._id,
+                price: item_price,
+                amount: amount
             })
-            if(UserOrder){
-                let price = 0
-                for(const[product_id , amount] of Object.entries(cart_item)){
-                    console.log(product_id)
-                    const product = await ProductServ.Get_Product_For_Order(product_id)
-                    if(product){
-                        const Orderitem = await OrderItem.create({
-                            order_id: UserOrder._id,
-                            product_id: product._id,
-                            price: amount*product.products_v.price,
-                            amount: amount
-                        })
-                        price = price + Orderitem.price
-                    }
-                }
-                const cart_key =`cart:${user_id}`
-                await redis.del(cart_key)
-                UserOrder.price = price
-                await UserOrder.save()
-                return Response.createdSuccess(null)
-            }
-            else{
-                return Response.serverErorr()
-            }
-        }
+        })
+        const UserOrder = await Order.create({
+            user_id: user_id,
+            name: `${user.user_name} order`,
+            status: 'draft',
+            price: price
+        })
+        if (!UserOrder) return Response.serverErorr()
+
+        await OrderItem.insertMany(
+            itemsData.map(item => ({ ...item, order_id: UserOrder._id }))
+        )
+
+        await redis.del(`cart:${user_id}`)
+
+        return Response.success({ id: UserOrder._id })
     }
+    
     async Get_Orderes(user_id){
         await Index.Drop_Index()
         const orderes = await Order.find({
