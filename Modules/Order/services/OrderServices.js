@@ -96,10 +96,6 @@ class  OrderServices{
             email:user.email,
             message:'order Created successfully'
         })
-        await Producer.publishMessage('order.created' , {
-            orderId: UserOrder._id,
-            userId: UserOrder.user_id,
-        })
         return Response.success({ id: UserOrder._id })
     }
     
@@ -244,7 +240,10 @@ class  OrderServices{
                     } catch (e) {
                         console.error('Redis top sellers error:', e.message)
                     }
-
+                    await Producer.publishMessage('order.created' , {
+                        orderId: order._id,
+                        userId: order.user_id,
+                    })
                     return Response.success(null)
                 }
                 else{
