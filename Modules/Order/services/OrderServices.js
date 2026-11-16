@@ -96,6 +96,10 @@ class  OrderServices{
             email:user.email,
             message:'order Created successfully'
         })
+        await Producer.publishMessage('order.created' , {
+            orderId: UserOrder._id,
+            userId: UserOrder.user_id,
+        })
         return Response.success({ id: UserOrder._id })
     }
     
@@ -253,7 +257,8 @@ class  OrderServices{
         }
         return Response.notFound()
     }
-     async Get_Confirmed_Order(){
+    async Get_Confirmed_Order(){
+        await Index.Create_Index_In_OrderItem()
         const order = await Order.find({ status:"confirmed" })
         if(order){
             return Response.success(order)
@@ -263,19 +268,24 @@ class  OrderServices{
     }
     async Accepted_Order(order_id){
        const order = await Order.findOneAndUpdate({
-        _id: order_id,
-        status:"confirmed"
-       },
-       { $set:{
-         status: "completed"
+                _id: order_id,
+                status:"confirmed"
+            },
+            { $set:{
+                status: "completed"
 
-       }},
-       {
-        new:true,
-        runValidators: true
-       }
-    )
+            }},
+            {
+                new:true,
+                runValidators: true
+            }
+        )
        if(order){
+        await producer.publishMessage('order.status_changed', {
+            orderId: order._id,
+            userId: order.user_id,
+            status: 'completed'
+        })
         return Response.success(null)
        }else{
         return Response.serverErorr(null)
@@ -295,6 +305,11 @@ class  OrderServices{
         runValidators:true
       })
        if(order){
+        await producer.publishMessage('order.status_changed', {
+            orderId: order._id,
+            userId: order.user_id,
+            status: 'rejected'
+        })
         return Response.success(null)
        }else{
         return Response.serverErorr(null)

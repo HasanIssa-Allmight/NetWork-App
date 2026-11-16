@@ -5,12 +5,12 @@ const NotificationServ = require('./Modules/Notification/services/NotificationSe
 class Worker{
 
     async withRetry(fn , counter = 3) {
-        for(let i=0 ; i<counter ; i++){
+        for(let i=1 ; i<=counter ; i++){
             try{
                 return await fn()
             }
             catch(err){
-                if(i == counter){
+                if(i === counter){
                     throw err
                 }
                 await new Promise(r =>setTimeout(r, 1000 * i))
@@ -41,10 +41,11 @@ class Worker{
             }
             try{
                 const data = JSON.parse(msg.content.toString())
-                await withRetry(() => NotificationServ.SendEamil(data.message.email, data.message.message))
+                await this.withRetry(() => NotificationServ.SendEamil(data.message.email, data.message.message))
                 channel.ack(msg) 
             }
             catch(err){
+                console.error('failed -> DLQ', err)
                 channel.nack(msg, false, false)
             }
         })
