@@ -16,7 +16,7 @@ const OrderShcema = new mongoos.Schema({
     },
     status:{
         type:String,
-        enum: ['draft' , 'confirmed' , 'complete' , 'rejected'],
+        enum: ['draft' , 'confirmed' , 'completed' , 'rejected'],
         default: 'draft'
     },
     created_at:{

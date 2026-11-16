@@ -253,6 +253,54 @@ class  OrderServices{
         }
         return Response.notFound()
     }
+     async Get_Confirmed_Order(){
+        const order = await Order.find({ status:"confirmed" })
+        if(order){
+            return Response.success(order)
+        }else{
+            return Response.notFound()
+        }
+    }
+    async Accepted_Order(order_id){
+       const order = await Order.findOneAndUpdate({
+        _id: order_id,
+        status:"confirmed"
+       },
+       { $set:{
+         status: "completed"
+
+       }},
+       {
+        new:true,
+        runValidators: true
+       }
+    )
+       if(order){
+        return Response.success(null)
+       }else{
+        return Response.serverErorr(null)
+       }
+       
+    }
+    async Rejected_Order(order_id){
+      const order = await Order.findOneAndUpdate({
+        _id:order_id,
+        status:"confirmed"
+      },{
+        $set:{
+            status:"rejected"
+        }
+      },{
+        new:true,
+        runValidators:true
+      })
+       if(order){
+        return Response.success(null)
+       }else{
+        return Response.serverErorr(null)
+       }
+       
+    }
 }
 
 module.exports = new OrderServices()
