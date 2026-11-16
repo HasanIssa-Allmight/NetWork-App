@@ -112,10 +112,15 @@ class OrderController {
         try{
             const user_id = req.userId
             const data = await OrderServ.Create_Order_After(user_id)
-            if(data){
+            if(data.id){
                 return res.status(data.status).json({
                     message: data.message,
-                    order_id:data.data.id
+                    order_id:data.id
+                })
+            }
+            else{
+                return res.status(data.status).json({
+                    message: data.message,
                 })
             }
         }

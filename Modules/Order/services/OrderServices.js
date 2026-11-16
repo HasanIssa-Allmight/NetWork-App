@@ -10,6 +10,7 @@ const event = require('../../../events/GlobalEvent')
 const Index = require('../indeces/createIndex')
 const redis = require('../../../infrastructure/redis/redis')
 const {logResults} = require('../../../Logging/Logger')
+const Producer = require('../../../producer')
 
 class  OrderServices{
 
@@ -53,8 +54,7 @@ class  OrderServices{
         ])
 
         const entries = Object.entries(cart_item || {})
-        if (!user || entries.length === 0) return
-
+        if (!user || entries.length === 0) return Response.validate('Cart is empty or user not found');
         const products = await Promise.all(
             entries.map(([product_id]) => ProductServ.Get_Product_For_Order(product_id))
         )
@@ -62,7 +62,10 @@ class  OrderServices{
         const itemsData = []
         entries.forEach(([, amount], i) => {
             const product = products[i]
-            if (!product) return
+            if (!product) {
+                console.log(`[Warning] Product not found for ID from cart!`);
+                return;
+            }
             const item_price = amount * product.products_v.price
             price += item_price
             itemsData.push({
@@ -71,6 +74,10 @@ class  OrderServices{
                 amount: amount
             })
         })
+        if (itemsData.length === 0) {
+            return Response.serverErorr();
+        }
+
         const UserOrder = await Order.create({
             user_id: user_id,
             name: `${user.user_name} order`,
@@ -84,7 +91,11 @@ class  OrderServices{
         )
 
         await redis.del(`cart:${user_id}`)
-
+        
+        await Producer.publishMessage('OrderNotify' , {
+            email:user.email,
+            message:'order Created successfully'
+        })
         return Response.success({ id: UserOrder._id })
     }
     

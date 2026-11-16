@@ -10,6 +10,7 @@ services:
       - dburl=mongodb://mongo1:27017,mongo2:27017/E_commerce?replicaSet=rs0
       - url=redis://redis:6379
       - INVENTORY_GRPC_URL=inventory:50051
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     volumes:
       - .:/app
       - /app/node_modules
@@ -19,6 +20,8 @@ services:
       mongo2:
         condition: service_healthy
       redis:
+        condition: service_started
+      rabbitmq:
         condition: service_started
     networks:
       - default
@@ -60,6 +63,16 @@ services:
     image: redis
     ports:
       - "127.0.0.1:6379:6379"
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"   
+      - "15672:15672" 
+    networks:
+      - ecom-net
+
 networks:
   ecom-net:
     driver: bridge
