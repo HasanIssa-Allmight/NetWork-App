@@ -27,7 +27,6 @@ class ProductServices {
     }
     async Get_Products(){
         const info = {}
-
         const products = await Products.find().sort({_id:1}).read('secondary')
         if(products){
             info.message = "successfull"

@@ -33,11 +33,11 @@ const productschema = new mongoose.Schema({
     catigores:{
         type:String,
         required: true
+
     },
 }, {
     timestamps: {createdAt: 'created_at' , updatedAt: 'updated_at'}
 })
-
 
 
 productschema.set('toJSON', { getters: true });
