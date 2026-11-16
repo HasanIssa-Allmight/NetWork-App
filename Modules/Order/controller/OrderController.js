@@ -112,10 +112,16 @@ class OrderController {
         try {
             const user_id = req.userId
             const data = await OrderServ.Create_Order_After(user_id)
-            if (data) {
+
+            if(data.id){
                 return res.status(data.status).json({
                     message: data.message,
-                    order_id: data.data.id
+                    order_id:data.id
+                })
+            }
+            else{
+                return res.status(data.status).json({
+                    message: data.message,
                 })
             }
         }
@@ -123,6 +129,68 @@ class OrderController {
             return res.status(500).json({
                 message: error.message
             })
+        }
+    }
+    async GetConfirmedOrder(req, res) {
+        try {
+            if (req.roleId != 'admin') {
+                return res.status(401).json({
+                    message: 'unAuthanticated'
+                })
+            }
+
+            const data = await OrderServ.Get_Confirmed_Order()
+            if (data) {
+                return res.status(data.status).json({
+                    order: data.data,
+                    message: data.message
+                })
+            }
+        } catch (error) {
+            return res.status(500).json({
+                message: error.message
+            })
+        }
+
+    }
+    async AcceptedOrder(req,res){
+        try{
+             if (req.roleId != 'admin') {
+                return res.status(401).json({
+                    message: 'unAuthanticated'
+                })
+            }
+            const order_id = req.params.order_id
+            const data = await OrderServ.Accepted_Order(order_id)
+            if (data){
+                res.status(data.status).json({
+                    message :data.message
+                })
+            }
+        }catch(error){
+          return res.status(500).json({
+            message:error.message
+          })
+        }
+    }
+     async RejectedOrder (req,res){
+        try{
+             if (req.roleId != 'admin') {
+                return res.status(401).json({
+                    message: 'unAuthanticated'
+                })
+            }
+            const order_id = req.params.order_id
+            const data = await OrderServ.Rejected_Order(order_id)
+            if (data){
+                res.status(data.status).json({
+                    message :data.message
+                })
+            }
+        }catch(error){
+          return res.status(500).json({
+            message:error.message
+          })
         }
     }
 }

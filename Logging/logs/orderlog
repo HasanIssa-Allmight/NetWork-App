@@ -1,0 +1,6 @@
+{"time":"2026-11-11T11:30:09.282Z","label":"Befor_Index","stage":"LIMIT","docsExamined":1,"returned":1,"timeMs":2}
+{"time":"2026-11-11T11:30:09.294Z","label":"Befor_Index","stage":"LIMIT","docsExamined":1,"returned":1,"timeMs":0}
+{"time":"2026-11-11T11:30:12.789Z","label":"Befor_Index","stage":"COLLSCAN","docsExamined":1,"returned":1,"timeMs":0}
+{"time":"2026-11-11T11:30:12.795Z","label":"Befor_Index","stage":"COLLSCAN","docsExamined":1,"returned":1,"timeMs":0}
+{"time":"2026-11-11T11:30:31.963Z","label":"Befor_Index","stage":"LIMIT","docsExamined":1,"returned":1,"timeMs":0}
+{"time":"2026-11-11T11:30:31.971Z","label":"Befor_Index","stage":"LIMIT","docsExamined":1,"returned":1,"timeMs":0}
