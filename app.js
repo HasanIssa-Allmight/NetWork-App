@@ -4,6 +4,12 @@ const cors = require('cors')
 const redis = require('./infrastructure/redis/redis')
 const body_parser = require('body-parser')
 const server = express()
+const startRealtimeConsumer = require('./socket/realTimeConsumer')
+
+const http = require('http')
+const SocketServer = http.createServer(server)
+const { initSocket } = require('./middleware/socketIo')
+
 
 
 //files
@@ -44,13 +50,16 @@ const Faker = require('./faker/faker')
 
 async function startServer() {
     try {
+        initSocket(SocketServer)
+
+        startRealtimeConsumer().catch(console.error)
         // Connect Redis first
         await redis.connect();
 
         console.log('Redis connected successfully!');
 
         // Start Express after Redis connection
-        server.listen(4000, () => {
+        SocketServer.listen(4000, () => {
             console.log('Server is running on port 4000 ...');
         });
 

@@ -1,7 +1,7 @@
 const User = require('../model/User')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-
+const createIndex = require('../indeces/index')
 class UserServices{
     async Customer_Register(user_name,email,password){
         const info={}
@@ -65,7 +65,7 @@ class UserServices{
     }
     async User_Login(email,password){
         const info={}
-
+        await createIndex.Create_Index()
         const user = await User.findOne({
             email: email
         })
