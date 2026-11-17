@@ -52,7 +52,7 @@ async function startServer() {
     try {
         initSocket(SocketServer)
 
-        // startRealtimeConsumer().catch(console.error)
+        startRealtimeConsumer().catch(console.error)
         // Connect Redis first
         await redis.connect();
 

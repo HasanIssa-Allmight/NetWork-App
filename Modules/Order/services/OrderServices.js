@@ -280,7 +280,7 @@ class  OrderServices{
             }
         )
        if(order){
-        await producer.publishMessage('order.status_changed', {
+        await Producer.publishMessage('order.status_changed', {
             orderId: order._id,
             userId: order.user_id,
             status: 'completed'
@@ -304,7 +304,7 @@ class  OrderServices{
         runValidators:true
       })
        if(order){
-        await producer.publishMessage('order.status_changed', {
+        await Producer.publishMessage('order.status_changed', {
             orderId: order._id,
             userId: order.user_id,
             status: 'rejected'

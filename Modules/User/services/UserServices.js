@@ -1,6 +1,6 @@
 const User = require('../model/User')
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcrypt')
 const createIndex = require('../indeces/index')
 class UserServices{
     async Customer_Register(user_name,email,password){
@@ -65,10 +65,9 @@ class UserServices{
     }
     async User_Login(email,password){
         const info={}
-        await createIndex.Create_Index()
         const user = await User.findOne({
             email: email
-        })
+        }).read('secondary')
         if(user){
             const isMatch = await bcrypt.compare(password , user.password)
             if(isMatch){
@@ -76,19 +75,8 @@ class UserServices{
                     id:user._id,
                     role:user.role
                 },process.env.JWT_SECRET)
-                const role = user.role
-                if(role == "customer"){
-                    info.token= token
-                    info.message="customer Login Successfully"
-                    info.status=200
-                    return info
-                }
-                else{
-                    info.token= token
-                    info.message="Admin Login Successfully"
-                    info.status=200
-                    return info
-                }
+                const label = user.role === 'customer' ? 'customer' : 'Admin'
+                return { token, message: `${label} Login Successfully`, status: 200 }
             }
             else{
                 info.message="Password is not correct"

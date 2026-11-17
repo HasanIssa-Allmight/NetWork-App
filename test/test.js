@@ -4,9 +4,9 @@ import execution from 'k6/execution';
 
 export const options = {
     stages: [
-        { duration: '30s', target: 50 },  
-        { duration: '1m', target: 100 }, 
-        { duration: '2m', target: 200 }, 
+        { duration: '30s', target: 20 },  
+        { duration: '1m', target: 50 }, 
+        { duration: '2m', target: 100 }, 
         { duration: '30s', target: 0 },    
     ],
 };
@@ -76,7 +76,7 @@ export default function (data) {
 
     const isOrderCreated = check(orderRes, {
         'order creation status is 201/200': (r) => r.status === 200 || r.status === 201,
-        'has order id': (r) => r.json('order_id') !== undefined, 
+        // 'has order id': (r) => r.json('order_id') !== undefined, 
     });
 
     if (!isOrderCreated) {

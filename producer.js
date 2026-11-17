@@ -24,7 +24,7 @@ class Producer{
             }))
         )
         // await this.channel.waitForConfirms()
-        console.log("successfull")
+        // console.log("successfull")
     }
 }
 
