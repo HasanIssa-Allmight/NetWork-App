@@ -2,6 +2,8 @@ const User = require('../model/User')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const createIndex = require('../indeces/index')
+const {logResults} = require('../../../Logging/Logger')
+
 class UserServices{
     async Customer_Register(user_name,email,password){
         const info={}

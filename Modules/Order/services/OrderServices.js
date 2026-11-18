@@ -226,7 +226,7 @@ class  OrderServices{
         if(order){
             const orderItem = await OrderItem.find({
                 order_id: order._id
-            }).read('secondary')
+            }).read('primary')
             if(orderItem.length > 0){
                 const Arrayproduct = orderItem.map(item => String(item.product_id))
                 const Arrayamount = orderItem.map(item => Number(item.amount))

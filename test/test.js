@@ -4,11 +4,13 @@ import execution from 'k6/execution';
 
 export const options = {
     stages: [
-        { duration: '30s', target: 20 },  
-        { duration: '1m', target: 50 }, 
-        { duration: '2m', target: 100 }, 
+        { duration: '30s', target: 200 },  
+        { duration: '1m', target: 400 }, 
+        { duration: '2m', target: 800 }, 
         { duration: '30s', target: 0 },    
     ],
+    // vus: 1,
+    // iterations: 1,
 };
 
 const BASE_URL = 'http://localhost:4000/v1';
@@ -26,7 +28,7 @@ export function setup() {
         return { products: [] };
     }
 }
-
+const TOTAL_USERS = 1;
 export default function (data) {
     const products = data.products;
     
@@ -36,7 +38,7 @@ export default function (data) {
     }
 
     const headers = { 'Content-Type': 'application/json' };
-    const counter = execution.scenario.iterationInTest + 1;
+    const counter = ((execution.vu.idInTest - 1) % TOTAL_USERS) + 1;
 
     const loginRes = http.post(`${BASE_URL}/user/Login`, JSON.stringify({
         email: `user${counter}@test.com`,
@@ -47,6 +49,11 @@ export default function (data) {
         'login status is 200': (r) => r.status === 200,
         'has auth token': (r) => r.json('token') !== undefined,
     });
+
+    if (!isLoginSuccess) {
+        console.log(`status=${loginRes.status} body=${loginRes.body} user=${counter}`);
+        return;
+    }
 
     if (!isLoginSuccess) return;
 
@@ -76,20 +83,22 @@ export default function (data) {
 
     const isOrderCreated = check(orderRes, {
         'order creation status is 201/200': (r) => r.status === 200 || r.status === 201,
-        // 'has order id': (r) => r.json('order_id') !== undefined, 
+        'has order_id': (r) => r.json('order_id') !== undefined, 
     });
 
     if (!isOrderCreated) {
+        console.log(` Status: ${confirmRes.status} | Body: ${confirmRes.body}`)
         return;
     }
+    const orderId = orderRes.json('order_id'); 
 
-    // const orderId = orderRes.json('order_id'); 
+    const confirmRes = http.post(`${BASE_URL}/order/ConfirmOrder/${orderId}`, JSON.stringify({}), authHeaders);
 
-    // const confirmRes = http.post(`${BASE_URL}/order/ConfirmOrder/${orderId}`, JSON.stringify({}), authHeaders);
+    const confirmOk = check(confirmRes, { 'Confirm Order OK': (r) => r.status === 200 });
 
-    // const confirmOk = check(confirmRes, { 'Confirm Order OK': (r) => r.status === 200 });
-
-
+    if (!confirmOk) {
+        console.log(`[Error] Confirm failed for order ${orderId} | Status: ${confirmRes.status} | Body: ${confirmRes.body}`);
+    }
     // if (confirmOk) {
     //     completedJourneys.add(1);
     // }
