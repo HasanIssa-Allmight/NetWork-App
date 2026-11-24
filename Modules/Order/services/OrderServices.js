@@ -266,20 +266,10 @@ class  OrderServices{
         }
     }
     async Accepted_Order(order_id){
-       const order = await Order.findOneAndUpdate({
-                _id: order_id,
-                status:"confirmed"
-            },
-            { $set:{
-                status: "completed"
-
-            }},
-            {
-                new:true,
-                runValidators: true
-            }
-        )
+       const order = await Order.findById(order_id)
        if(order){
+        order.status = "completed"
+        await order.save()
         await Producer.publishMessage('order.status_changed', {
             orderId: order._id,
             userId: order.user_id,
@@ -292,18 +282,10 @@ class  OrderServices{
        
     }
     async Rejected_Order(order_id){
-      const order = await Order.findOneAndUpdate({
-        _id:order_id,
-        status:"confirmed"
-      },{
-        $set:{
-            status:"rejected"
-        }
-      },{
-        new:true,
-        runValidators:true
-      })
+       const order = await Order.findById(order_id)
        if(order){
+        order.status = "rejected"
+        await order.save()
         await Producer.publishMessage('order.status_changed', {
             orderId: order._id,
             userId: order.user_id,

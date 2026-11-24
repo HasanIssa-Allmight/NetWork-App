@@ -28,7 +28,7 @@ export function setup() {
         return { products: [] };
     }
 }
-const TOTAL_USERS = 1;
+const TOTAL_USERS = 800;
 export default function (data) {
     const products = data.products;
     
@@ -96,9 +96,9 @@ export default function (data) {
 
     const confirmOk = check(confirmRes, { 'Confirm Order OK': (r) => r.status === 200 });
 
-    if (!confirmOk) {
-        console.log(`[Error] Confirm failed for order ${orderId} | Status: ${confirmRes.status} | Body: ${confirmRes.body}`);
-    }
+    // if (!confirmOk) {
+    //     console.log(`[Error] Confirm failed for order ${orderId} | Status: ${confirmRes.status} | Body: ${confirmRes.body}`);
+    // }
     // if (confirmOk) {
     //     completedJourneys.add(1);
     // }
